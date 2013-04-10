@@ -1,3 +1,6 @@
+# compilierte Skripte
+*.pyc
+
 # C extensions
 *.so
 
