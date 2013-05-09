@@ -6,3 +6,7 @@ from visual import *
 
 erde = sphere(material=materials.earth)
 print("Erde erstellt")
+
+while True:
+    rate(25)
+    erde.rotate(angle=radians(1), axis=(0,1,0))
