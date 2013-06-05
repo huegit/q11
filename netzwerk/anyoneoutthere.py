@@ -3,24 +3,24 @@ MYPORT = 50000
 import sys
 from socket import *
 import time
-spielername="test"
+spielername="test".encode("ascii")
 s = socket(AF_INET, SOCK_DGRAM)
 s.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
-s.sendto(spielername, ('<broadcast>', MYPORT)
+s.sendto(spielername, ('<broadcast>', MYPORT))
 
-e=socket(AF_INET, SOCK_DGRAM)
+sender=socket(AF_INET, SOCK_DGRAM)
 try:
-	e.bind(("", 50000))
-	daten, addr = e.recvfrom(1024)
+	sender.bind(("", 50000))
+	daten, addr = sender.recvfrom(1024)
 finally:
-	e.close()
+	sender.close()
 if addr:
 	ip=addr[0]
 	print("Mit Server verbunden")
 else:
-	e.bind(("", 50000))
+	serv.bind(("", 50000))
 	while True:	
-		daten, addr = s.recvfrom(1024)
+		daten, addr = serv.recvfrom(1024)
 		time.wait(1)
-		s.sendto("", (addr[0], 50000))
+		serv.sendto("", (addr[0], 50000))
 	
