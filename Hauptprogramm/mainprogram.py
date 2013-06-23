@@ -213,7 +213,7 @@ class Spieler():
                         print("2")
                         zaehler += 1
                         
-            for n in self.listeLaender:                     # wenn alle Länder durch                                   
+            for n in self.listeLaender:                     # Problem: Methode bricht ab bzw. geht nicht alle K durch                                  
                 if n.kontinent == index.name and index.listeInklusive.count(n) != 0: 
                        index.listeInklusive.append(n)
                        print(index.listeInklusive,"1")
