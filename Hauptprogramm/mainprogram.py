@@ -35,7 +35,15 @@ class Land():
         return self.name    # für Ausgabe              
                                                         
     def __str__(self):                                  
-        return self.name    # für Ausgabe       
+        return self.name    # für Ausgabe
+
+class Figur():
+    "Kontruktor: Wert"
+    def __init__(self, wert, land, spieler, farbe):
+        self.wert    = wert
+        self.land    = land
+        self.spieler = spieler
+        self.farbe   = farbe
 
 class Spieler():
     "Konstruktor: Name"
@@ -172,7 +180,7 @@ class Spieler():
 
         self.listeLaender.append(hawaii)
         self.listeLaender.append(neuguinea)
-        #self.listeLaender.append(balkan)
+        self.listeLaender.append(balkan)
         self.listeLaender.append(westaustralien)
         self.listeLaender.append(madagaskar)
         self.listeLaender.append(indonesien)
@@ -198,28 +206,16 @@ class Spieler():
     def kontinent_bekommen(self):       # Methode die prüft, ob Spieler neuen K bekommt
 
         zaehler = 0     # definition Zähler
-        index = risk.listeKontinente[zaehler]   # index = aktueller Kontinent den es zu prüfen gilt
+        
+        while zaehler < len(risk.listeKontinente):
 
-        for i in self.listeLaender:     # iteriert Liste L mit i
-
-            if len(risk.listeKontinente) >= zaehler:    # wenn Länge der Liste kleiner als Zähler
-
-                if i.kontinent == index.name:       # wenn name = kontinent
-                    index.listeInklusive.remove(i)  # aktuelles L i wird aus der Liste der L von K entfernt
-                    print(i)
-                    
-                    if len(index.listeInklusive) == 0:      # wenn Liste der Länder leer ist
-                        self.listeKontinente.append(index)  # Liste der K von S wird um aktuellen K erweitert
-                        print("2")
-                        zaehler += 1
-                        
-            for n in self.listeLaender:                     # Problem: Methode bricht ab bzw. geht nicht alle K durch                                  
-                if n.kontinent == index.name and index.listeInklusive.count(n) != 0: 
-                       index.listeInklusive.append(n)
-                       print(index.listeInklusive,"1")
-
-                       if len(index.listeInklusive) == index.laenderzahl:
-                          zaehler += 1
+            index = risk.listeKontinente[zaehler]   # index = aktueller Kontinent den es zu prüfen gilt
+            
+            if sum(p.kontinent == index.name for p in self.listeLaender) == index.laenderzahl:
+                self.listeKontinente.append(index)
+                zaehler += 1
+            elif sum(p.kontinent == index.name for p in self.listeLaender) != index.laenderzahl:
+                zaehler += 1
 
 class Controller():     # Controllerklasse wird bestimmt
     "Konstruktor"
