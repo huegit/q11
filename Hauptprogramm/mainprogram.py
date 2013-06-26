@@ -226,15 +226,8 @@ class Spieler():
 
 class Controller():     # Controllerklasse wird bestimmt
     "Konstruktor"
-    def __init__(self, listeSpieler=[], spielbrett=[], listeLaenderkarten=[], listeAuftragskarten=[],
-                 listeWuerfelRot=[], listeWuerfelBlau=[], listeSpielsteine=[], listeKontinente=[]):
+    def __init__(self, listeSpieler=[], listeKontinente=[]):
         self.listeSpieler        = listeSpieler         # Liste der S
-        self.spielbrett          = spielbrett           # bisher unnütz
-        self.listeLaenderkarten  = listeLaenderkarten   # bisher unnütz
-        self.listeAuftragskarten = listeAuftragskarten  # bisher unnütz
-        self.listeWuerfelRot     = listeWuerfelRot      # bisher unnütz
-        self.listeWuerfelBlau    = listeWuerfelBlau     # bisher unnütz
-        self.listeSpielsteine    = listeSpielsteine     # bisher unnütz
         self.listeKontinente     = listeKontinente      # Liste aller K im Spiel
 
     def sort_k(self, c):    # Sortiermethode, gibt Namen zurück
@@ -295,9 +288,9 @@ if __name__ == "__main__":
 
     # K werden erstellt
     
-    afrika     = Kontinent("Afrika", 3, [madagaskar, balkan], 2)
-    australien = Kontinent("Australien", 2, [indonesien, neuguinea, westaustralien], 3)
-    nordamerika= Kontinent("Nordamerika", 5, [hawaii], 1)
+    afrika     = Kontinent("Afrika", 3, 2)
+    australien = Kontinent("Australien", 2, 3)
+    nordamerika= Kontinent("Nordamerika", 5, 1)
 
     # K werden eingefügt
     
