@@ -47,8 +47,9 @@ class Figur():
 
 class Spieler():
     "Konstruktor: Name"
-    def __init__(self, name, listeLaender=[], listeKontinente=[], listeKarten=[]):
+    def __init__(self, name, armeen=0, listeLaender=[], listeKontinente=[], listeKarten=[]):
         self.name             = name            # Name des S
+        self.armeen           = armeen          # A des S
         self.listeLaender     = listeLaender    # Liste der L von S
         self.listeKontinente  = listeKontinente # Liste der K von S
         self.listeKarten      = listeKarten     # Liste der Karten von S
@@ -71,21 +72,24 @@ class Spieler():
         for i in self.listeKontinente:
             kontinentarmeen += i.wert   # iteriert die Liste K und addiert Wertigkeit
 
-        armeen = laenderarmeen + kontinentarmeen # K A + L A = A ges
+        self.armeen += laenderarmeen + kontinentarmeen # K A + L A = A ges
             
-        print(armeen)
+        print(self.armeen)
 
     def karte_bekommen(self):   # Zufallskarte bekommen
 
         r = random.choice(["Reiter", "Soldat", "Kanone"])
         self.listeKarten.append(r)
 
+    def würfeln(self):
+        r = random.choice([1,2,3,4,5,6])
+
     def karten_eintauschen(self):   # tausche Karten gegen A
 
         kanone = self.listeKarten.count("Kanone")   # zählt Anzahl Kanonen
         reiter = self.listeKarten.count("Reiter")   # zählt Anzahl Reiter
         soldat = self.listeKarten.count("Soldat")   # zählt Anzahl Soldaten
-        armeen = 0      # def Armeen
+        old_armeen = self.armeen      # def Armeen vor eintauschen
         grund  = " "    # def Grund
 
         print("Du hast",kanone,"Kanonen",reiter,"Reiter",soldat,"Soldaten") # Gibt Anzahl der Karten aus
@@ -98,7 +102,7 @@ class Spieler():
 
                 if kanone >= 1 and reiter >= 1 and soldat >= 1: # wenn jeweils eine Karte
                     grund  = "drei unterschiedliche Figuren"
-                    armeen = 10                                 # dann 10 Armeen
+                    self.armeen += 10                           # dann 10 Armeen
                     self.listeKarten.remove("Kanone")           # Kanone, Reiter, Kanone entfernen 
                     self.listeKarten.remove("Reiter")
                     self.listeKarten.remove("Soldat")
@@ -106,7 +110,7 @@ class Spieler():
                 if kanone >= 3 and reiter <= 2 and soldat <= 0\
                    or kanone >= 3 and reiter <= 0 and soldat <= 2:  # wenn 3*Kanone
                     grund  = "drei Kanonen"
-                    armeen = 8                                      # dann 8 Armeen
+                    self.armeen += 8                                # dann 8 Armeen
                     self.listeKarten.remove("Kanone")               # 3*Kanone entfernen
                     self.listeKarten.remove("Kanone")
                     self.listeKarten.remove("Kanone")
@@ -114,7 +118,7 @@ class Spieler():
                 if kanone <= 2 and reiter >= 3 and soldat <= 0\
                    or kanone <= 0 and reiter >= 3 and soldat <= 2:  # wenn 3*Reiter
                     grund  = "drei Reiter"
-                    armeen = 6                                      # dann 6 Armeen
+                    self.armeen += 6                                # dann 6 Armeen
                     self.listeKarten.remove("Reiter")               # 3*Reiter entfernen
                     self.listeKarten.remove("Reiter")
                     self.listeKarten.remove("Reiter")
@@ -122,17 +126,17 @@ class Spieler():
                 if kanone <= 2 and reiter <= 0 and soldat >= 3\
                    or kanone <= 0 and reiter <= 2 and soldat >= 3:  # wenn 3*Soldat
                     grund  = "drei Soldaten"
-                    armeen = 4                                      # dann 4 Armeen
+                    self.armeen += 4                                # dann 4 Armeen
                     self.listeKarten.remove("Soldat")               # 3*Soldat entfernen
                     self.listeKarten.remove("Soldat")
                     self.listeKarten.remove("Soldat")
 
                 else:
-                    if armeen == 0:                                 # wenn keine A bekommen weil nicht mögl
+                    if old_armeen == self.armeen:                   # wenn keine A bekommen weil nicht mögl
                         print("Du kannst leider nichts eintauschen")# Ausgabe nicht mögl
                         return                                      # abbruch der Funktion
     
-                print("Du hast",armeen,"Armeen für",grund,"bekommen")   # Ausgabe wieviele A + Grund
+                print("Du hast",(self.armeen-old_armeen),"Armeen für",grund,"bekommen")   # Ausgabe wieviele A + Grund
 
             if frage == "n":    # wenn nein
 
@@ -143,7 +147,7 @@ class Spieler():
             
             if kanone >= 1 and reiter >= 1 and soldat >= 1:
                     grund  = "drei unterschiedliche Figuren"
-                    armeen = 10
+                    self.armeen += 10
                     self.listeKarten.remove("Kanone")
                     self.listeKarten.remove("Reiter")
                     self.listeKarten.remove("Soldat")
@@ -151,7 +155,7 @@ class Spieler():
             if kanone >= 3 and reiter <= 2 and soldat <= 0\
                or kanone >= 3 and reiter <= 0 and soldat <= 2:
                     grund  = "drei Kanonen"
-                    armeen = 8
+                    self.armeen += 8
                     self.listeKarten.remove("Kanone")
                     self.listeKarten.remove("Kanone")
                     self.listeKarten.remove("Kanone")
@@ -159,7 +163,7 @@ class Spieler():
             if kanone <= 2 and reiter >= 3 and soldat <= 0\
                 or kanone <= 0 and reiter >= 3 and soldat <= 2:
                     grund  = "drei Reiter"
-                    armeen = 6
+                    self.armeen += 6
                     self.listeKarten.remove("Reiter")
                     self.listeKarten.remove("Reiter")
                     self.listeKarten.remove("Reiter")
@@ -167,12 +171,12 @@ class Spieler():
             if kanone <= 2 and reiter <= 0 and soldat >= 3\
                 or kanone <= 0 and reiter <= 2 and soldat >= 3:
                     grund  = "drei Soldaten"
-                    armeen = 4
+                    self.armeen += 4
                     self.listeKarten.remove("Soldat")
                     self.listeKarten.remove("Soldat")
                     self.listeKarten.remove("Soldat")
 
-            print("Du hast",armeen,"Armeen für",grund,"bekommen")
+            print("Du hast",(self.armeen-old_armeen),"Armeen für",grund,"bekommen")
 
     def land_erobern(self):     # Unfertige Methode (hier hinzufügen versch. L)
 
@@ -198,6 +202,9 @@ class Spieler():
         # Nach hinzufügen des/der L wird listeLaender nach K sortiert
         
         self.listeLaender.sort(key=self.sort_l)
+
+    def armeen_positionieren(self):
+        pass
 
     def sort_l(self, c):        # Sortiermethode, gibt K des L zurück
         
