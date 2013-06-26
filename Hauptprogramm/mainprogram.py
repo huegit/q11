@@ -206,11 +206,13 @@ class Spieler():
     def armeen_positionieren(self):
         pass
 
-    def sort_l(self, c):        # Sortiermethode, gibt K des L zurück
+    def sort_l(self, c):
+        "Sortiermethode, gibt K des L zurück"
         
         return c.kontinent
 
-    def kontinent_bekommen(self):       # Methode die prüft, ob Spieler neuen K bekommt
+    def kontinent_bekommen(self):
+        "Methode die prüft, ob Spieler neuen K bekommt"
 
         zaehler = 0     # definition Zähler
         
@@ -279,12 +281,12 @@ if __name__ == "__main__":
 
     # L werden erstellt
     
-    indonesien = Land("Indonesien", "Australien")
-    neuguinea  = Land("Neu-Guinea", "Australien")
-    westaustralien = Land("West-Australien", "Australien")
-    madagaskar = Land("Madagaskar", "Afrika")
-    balkan     = Land("Balkan", "Afrika")
-    hawaii     = Land("Hawaii", "Nordamerika")
+    indonesien      = Land("Indonesien", "Australien")
+    neuguinea       = Land("Neu-Guinea", "Australien")
+    westaustralien  = Land("West-Australien", "Australien")
+    madagaskar      = Land("Madagaskar", "Afrika")
+    balkan          = Land("Balkan", "Afrika")
+    hawaii          = Land("Hawaii", "Nordamerika")
 
     # K werden erstellt
     
