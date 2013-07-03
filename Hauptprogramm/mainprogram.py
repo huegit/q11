@@ -2,7 +2,6 @@
 # 07.06.2013
 # K = Kontinent, L = Land, S = Spieler, A = Armee
 
-import sys
 import random
 import socket
 from tkinter import *
@@ -249,6 +248,15 @@ class Controller():     # Controllerklasse wird bestimmt
 
                     def spieler_einfuegen(event):
                         name = spielername.get()
+                        
+                        if name == "":
+                            spielerl.insert(END, "Bitte Name eingeben!\n")
+                            return
+                        if name.count(" ") == len(name):
+                            spielerl.insert(END, "Bitte gültigen Namen eingeben!\n")
+                            spielername.delete(0,END)
+                            return
+                        
                         spielername.delete(0,END)
                         self.listeSpieler.append(Spieler(name))
                         spielerl.insert(END, "Spieler "+name+" hinzugefügt!\n")
