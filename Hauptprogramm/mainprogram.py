@@ -2,9 +2,11 @@
 # 07.06.2013
 # K = Kontinent, L = Land, S = Spieler, A = Armee
 
+import sys
 import random
 import socket
 from tkinter import *
+from spielbrett import Spielbrett
 
 class Kontinent():
     "Konstruktor: Name, Wert, Länder inc."
@@ -228,28 +230,51 @@ class Spieler():
 
 class Controller():     # Controllerklasse wird bestimmt
     "Konstruktor"
-    def __init__(self, listeSpieler=[], listeKontinente=[]):
+    def __init__(self, karte=None, listeSpieler=[], listeKontinente=[]):
+        self.karte               = karte
         self.listeSpieler        = listeSpieler         # Liste der S
         self.listeKontinente     = listeKontinente      # Liste aller K im Spiel
 
     def sort_k(self, c):    # Sortiermethode, gibt Namen zurück
         return c.name
-
+                
     def spielstart(self):   # Spielroutine
-
+        
+        root = Tk()
+        
         self.listeKontinente.sort(key=self.sort_k)      # Kontinente werden nach Name sortiert
 
         while True:         # Anfangsschleife für S hinzufügen
+            try:
 
-            spielername = input("Spieler hinzufügen:")      # input: S hinzufügen
-            self.listeSpieler.append(Spieler(spielername))  # Liste der S wird um "spielername" erweitert
-            ende = input("Spiel starten (y/n)?:")           # Soll das Spiel beginnen?
-            
-            if ende == "y":     # wenn y dann break => Spiel beginnt
-                break
+                    def spieler_einfuegen(event):
+                        name = spielername.get()
+                        spielername.delete(0,END)
+                        self.listeSpieler.append(Spieler(name))
+                        spielerl.insert(END, "Spieler "+name+" hinzugefügt!\n")
+
+                    def weiter():
+                        root.destroy()
+
+                    Label(root, text="Name eingeben:").grid(row=1, sticky=W)
+                    spielerl = Text(root, height=5, width=40)
+                    spielerl.grid(row=0)
+                    spielername = Entry(root)
+                    spielername.bind("<Return>", spieler_einfuegen)
+                    spielername.grid(row=1, sticky=E)
+                
+                    starten = Button(root, text="Spiel starten", command = weiter, width=20).grid(row=2, sticky=W)
+                    ende = Button(root, text="Spiel beenden", command = exit, width=20).grid(row=2, sticky=E)
+
+                    root.mainloop()
+                    
+            except TclError:
+                    break
         
 
         zaehler = 0     # definition Zähler
+        
+        self.karte = Spielbrett()
         
         while True:         # Hauptschleife, Spiel an sich
             
@@ -266,10 +291,10 @@ class Controller():     # Controllerklasse wird bestimmt
             if zaehler == 6:                            # nach 6 Spielzügen bricht das Spiel ab
                 break
             
-            
 # bei Start:        
         
 if __name__ == "__main__":
+
     
     # Controller mit dem Namen "risk" wird erstellt
     
@@ -327,7 +352,7 @@ if __name__ == "__main__":
     amerika    = Kontinent("Amerika", 5, 9)
     asien      = Kontinent("Asien", 7, 12)
     europa     = Kontinent("Europa", 5, 7)
-    suedamerika= Kontinent("Südamerika", 2, 4) 
+    suedamerika= Kontinent("Südamerika", 2, 4)
 
     # K werden eingefügt
     
@@ -339,5 +364,5 @@ if __name__ == "__main__":
     risk.listeKontinente.append(suedamerika)
 
     # Spiel wird gestartet
-    
+
     risk.spielstart()
