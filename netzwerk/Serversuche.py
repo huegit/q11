@@ -46,23 +46,23 @@ class Client(Thread):
         self.name = name
         
     def run(self):
+        client = socket(AF_INET, SOCK_DGRAM)
         while True:
             self.schreiben()
             
     def schreiben(self):
-        server = socket(AF_INET, SOCK_DGRAM)
         senden = input("Nachricht:").encode("UTF-8")
-        server.sendto(senden, (self.ip, MYPORT))
+        client.sendto(senden, (self.ip, MYPORT))
 
 def serverstart():
     "Startet neuen Server der klasse Server"
-    server = Server()
-    server.start()
+    serverHost = Server()
+    serverHost.start()
 
-def client(ip, name):
+def clientstart(ip, name):
     "Startet Client der an Server gebunden ist"
-    client = Client(ip, name)
-    client.start()
+    client1 = Client(ip, name)
+    client1.start()
 
 def serversuche():
     "Sucht Server bzw erstellt neuen"
@@ -82,11 +82,12 @@ def serversuche():
         s.close                                 # der Suchserver wird geschlossen
         if antwort.decode("UTF-8") == "12hnisa":
             print("Server gefunden:", ip)
-            client(ip, myname)
+            clientstart(ip, myname)
             
     except timeout:                 # wenn nach 3 sec kein Server gefunden wurde
         print("Kein Server gefunden, erstelle neuen auf Port", MYPORT)
         serverstart()               # wird ein neuer erstellt
+        clientstart("127.0.0.1", myname)   # loopback client
 
     s.close                 # der Server zur Suche wird geschlossen
 
