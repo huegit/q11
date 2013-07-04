@@ -1,12 +1,16 @@
-# Hauptprogramm
-# 07.06.2013
+# Q11-Projekt: "Risiko"
+# Hauptprogramm, enthält alle anderen Bestandtteile
+# aktualisiert am 04.07.2013
 # K = Kontinent, L = Land, S = Spieler, A = Armee
+# by Alexander Epple
 
-import random
-import socket
-from tkinter import *
-from spielbrett import Spielbrett
-from spielbrett import Konsole
+from random import *                    # Importiert Zufallsmodul
+from socket import *                    # Importiert Servermodul
+from tkinter import *                   # Importiert Eingabemodul(Buttons, Eingabefenster...)
+from visual import *                    # Importiert 3D Grafik
+from spielbrett import Spielbrett       # Importiert die Klasse Spielbrett
+from spielbrett import Konsole          # Importiert die Klasse Konsole (GUI)
+from spielsteine import platzieren      # Importiert die Funktion platzieren()
 
 class Kontinent():
     "Konstruktor: Name, Wert, Länder inc."
@@ -40,12 +44,11 @@ class Land():
         return self.name    # für Ausgabe
 
 class Figur():
-    "Kontruktor: Wert"
-    def __init__(self, wert, land, spieler, farbe):
-        self.wert    = wert
-        self.land    = land
-        self.spieler = spieler
-        self.farbe   = farbe
+    "Kontruktor: Wert, Spieler+Farbe"
+    def __init__(self, wert, spieler, farbe):
+        self.wert    = wert     # Wert der Figur
+        self.spieler = spieler  # Zugehöriger S
+        self.farbe   = farbe    # Farbe des S
 
 class Spieler():
     "Konstruktor: Name"
@@ -76,23 +79,27 @@ class Spieler():
 
         self.armeen += laenderarmeen + kontinentarmeen # K A + L A = A ges
 
-        risk.gui.del_old()
-        risk.gui.meine_armeen(str(self.armeen))
+        risk.gui.del_old()                      # Entfernt alte A Anzeige
+        risk.gui.meine_armeen(str(self.armeen)) # Erstellt neue anhand der zusätzlichen A
 
     def karte_bekommen(self):   # Zufallskarte bekommen
+        "Methode um zufällig Karte zu bekommen"
 
-        r = random.choice(["Reiter", "Soldat", "Kanone"])
-        self.listeKarten.append(r)
+        r = choice(["Reiter", "Soldat", "Kanone"])  # zufällige Karte
+        self.listeKarten.append(r)                  # wird an Liste der Karten angehängt
 
     def würfeln(self):
-        r = random.choice([1,2,3,4,5,6])
+        "schnelle Würfelmethode"
+        
+        r = random.choice([1,2,3,4,5,6])            # zufällige Zahl
 
     def karten_eintauschen(self):   # tausche Karten gegen A
+        "Methode um Karten einzutauschen"
 
         kanone = self.listeKarten.count("Kanone")   # zählt Anzahl Kanonen
         reiter = self.listeKarten.count("Reiter")   # zählt Anzahl Reiter
         soldat = self.listeKarten.count("Soldat")   # zählt Anzahl Soldaten
-        old_armeen = self.armeen      # def Armeen vor eintauschen
+        old_armeen = self.armeen      # def A vor eintauschen
         grund  = " "    # def Grund
 
         risk.gui.karte_anzeigen(str(kanone),str(reiter),str(soldat))
@@ -180,11 +187,12 @@ class Spieler():
                     self.listeKarten.remove("Soldat")
                     self.listeKarten.remove("Soldat")
 
-            risk.gui.karte_eintauschen(grund, str(self.armeen-old_armeen))
-            risk.gui.del_old()
+            risk.gui.karte_eintauschen(grund, str(self.armeen-old_armeen))  # Gibt Daten (Grund, Anzahl der A) an GUI weiter
+            risk.gui.del_old()                                              # diese entfernt alte A Anzeige
             risk.gui.meine_armeen(str(self.armeen))
 
     def land_erobern(self):     # Unfertige Methode (hier hinzufügen versch. L)
+        "Methode um L zu bekommen"
 
         # hinzufügen aller vorhandenen L
 
@@ -197,7 +205,7 @@ class Spieler():
         self.listeLaender.append(indonesien)
         self.listeLaender.append(neuguinea)
 
-        # Karten bekommen
+        # Karten bekommen ( fünf mal )
 
         self.karte_bekommen()
         self.karte_bekommen()
@@ -211,88 +219,105 @@ class Spieler():
         
         self.listeLaender.sort(key=self.sort_l)
 
+    def armeen_setzten(self, armeen, land):
+        "Methode um A in Länder zu setzten"
+        
+        index   = self.listeLaender.index(land)     # L wird bestimmt (erstes vorkommendes Element in listeLaender)
+        l = self.listeLaender[index]                # Daten von L werden gespeichert
+        platzieren(armeen, l.pos1, l.pos2, l.pos3, l.pos4, l.pos5, color.red)   # und zum platzieren verwendet (Positionen)
+
     def sort_l(self, c):
         "Sortiermethode, gibt K des L zurück"
         
-        return c.kontinent
+        return c.kontinent  # gibt K des L zurück, für korrekte Sortierung
 
     def kontinent_bekommen(self):
-        "Methode die prüft, ob Spieler neuen K bekommt"
+        "Methode die prüft, ob S neuen K bekommt"
 
         zaehler = 0     # definition Zähler
 
-        while zaehler < len(risk.listeKontinente):
+        while zaehler < len(risk.listeKontinente):      # solange der Zähler kleiner als die Anzahl der K ist
 
             index = risk.listeKontinente[zaehler]   # index = aktueller Kontinent den es zu prüfen gilt
             
             if sum(p.kontinent == index.name for p in self.listeLaender) == index.laenderzahl:
-                self.listeKontinente.append(index)
-                risk.gui.kontinent_bekommen(index.name)
-                zaehler += 1
-            elif sum(p.kontinent == index.name for p in self.listeLaender) != index.laenderzahl:
-                zaehler += 1
+                # Wenn die Anzahl der L mit dem aktuellem K gleich der laenderanzahl des aktuellen k ist
+                self.listeKontinente.append(index)                  # so wird er annektiert
+                risk.gui.kontinent_bekommen(index.name)             # an die GUI geschickt die ihn anzeigt
+                zaehler += 1                                        # Zähler wird hochgestuft
+            elif sum(p.kontinent == index.name for p in self.listeLaender) != index.laenderzahl: # wenn dem nicht so ist
+                zaehler += 1                                        # Zähler wird hochgestuft
 
 class Controller():     # Controllerklasse wird bestimmt
     "Konstruktor"
     def __init__(self, karte=None, gui=None, listeSpieler=[], listeKontinente=[]):
-        self.karte               = karte
-        self.gui                 = gui
+        self.karte               = karte                # Zugehörige Karte
+        self.gui                 = gui                  # Overlay, GUI
         self.listeSpieler        = listeSpieler         # Liste der S
         self.listeKontinente     = listeKontinente      # Liste aller K im Spiel
 
-    def sort_k(self, c):    # Sortiermethode, gibt Namen zurück
+    def sort_k(self, c):
+        "Sortiermethode, gibt Namen zurück"
         return c.name
                 
     def spielstart(self):   # Spielroutine
-        
-        root = Tk()
+        "Hauptmethode, steuert Spiel und Zugroutinen"
+        root = Tk()     # Tkinter wird integriert
         
         self.listeKontinente.sort(key=self.sort_k)      # Kontinente werden nach Name sortiert
 
         while True:         # Anfangsschleife für S hinzufügen
-            try:
+            try:            # veruche folgendes
 
                     def spieler_einfuegen(event):
-                        name = spielername.get()
+                        "Methode um S einzufügen"
+                        name = spielername.get() # Speichere aktuelle Eingabe unter Name
                         
-                        if name == "":
-                            spielerl.insert(END, "Bitte Name eingeben!\n")
-                            return
-                        if name.count(" ") == len(name):
-                            spielerl.insert(END, "Bitte gültigen Namen eingeben!\n")
-                            spielername.delete(0,END)
-                            return
+                        if name == "":          # Wenn keine Eingabe
+                            spielerl.insert(END, "Bitte Name eingeben!\n")  # bitte Eingabe erscheint im Fenster
+                            return              # Ende der Fkt
+                        if name.count(" ") == len(name):    # Wenn nur Leerzeichen (HaHaHa)
+                            spielerl.insert(END, "Bitte gültigen Namen eingeben!\n")    # bitte korrekte Eingabe erscheint im Fenster
+                            spielername.delete(0,END)       # Eingabe wird entfernt
+                            return              # Ende der Fkt.
                         
-                        spielername.delete(0,END)
-                        self.listeSpieler.append(Spieler(name))
-                        spielerl.insert(END, "Spieler "+name+" hinzugefügt!\n")
+                        spielername.delete(0,END)   # Eingabe wird entfernt
+                        self.listeSpieler.append(Spieler(name)) # wird in listeSpieler integriert
+                        spielerl.insert(END, "Spieler "+name+" hinzugefügt!\n") # Erfolgreich eingefügt erscheint im Fenster
 
                     def weiter():
-                        root.destroy()
+                        "Wenn keine Spieler mehr eingefügt werden sollen"
+                        if len(self.listeSpieler) > 0:  # wenn mehr als ein S vorhanden sind
+                            root.destroy()              # Fenster wird zerstört (sehr brutal)
+                        else:                           # wenn kein S vorhanden
+                            spielerl.insert(END, "Vor Start bitte Name eingeben!\n")    # Bitte S hinzufügen erscheint im Fenster
 
-                    Label(root, text="Name eingeben:").grid(row=1, sticky=W)
-                    spielerl = Text(root, height=5, width=40)
-                    spielerl.grid(row=0)
-                    spielername = Entry(root)
-                    spielername.bind("<Return>", spieler_einfuegen)
-                    spielername.grid(row=1, sticky=E)
-                
-                    starten = Button(root, text="Spiel starten", command = weiter, width=20).grid(row=2, sticky=W)
-                    ende = Button(root, text="Spiel beenden", command = exit, width=20).grid(row=2, sticky=E)
+                    Label(root, text="Name eingeben:").grid(row=1, sticky=W)    # Schriftzug neben dem Eingabefeld
+                    spielerl = Text(root, height=5, width=40)                   # Ausgabefenster
+                    spielerl.grid(row=0)                                        # wird positioniert
+                    spielername = Entry(root)                                   # Eingabefeld
+                    spielername.bind("<Return>", spieler_einfuegen)             # wird an Eingabetaste gebunden
+                    spielername.grid(row=1, sticky=E)                           # und positioniert
 
-                    root.mainloop()
+                   
+                    starten = Button(root, text="Spiel starten", command = weiter, width=20).grid(row=2, sticky=W)  # Startbutton, ist an weiter() gebunden
+                    ende = Button(root, text="Spiel beenden", command = exit, width=20).grid(row=2, sticky=E)       # Endebutton, beendet Spiel
+
+                    root.mainloop()     # Fenster wird erstellt (mit allen Knöpfen Eingabe/Ausgabefeldern etc. , muss immer am Ende stehen
                     
-            except TclError:
-                    break
+            except TclError:            # wenn Fehler das Fenster nicht mehr existiert (nach Fenster zerstören, siehe weiter())
+                    break               # breche Schleife ab, gehe weiter im Programm
         
 
         zaehler = 0     # definition Zähler
         
-        self.karte = Spielbrett().animation()
-        self.gui   = Konsole()
+        self.karte = Spielbrett()   # Spielbrett ist karte des Controllers
+        self.gui   = Konsole()      # Konsole ist GUI des Controllers
         
         
         while True:         # Hauptschleife, Spiel an sich
+
+            self.karte.animation()  # coole Zoom/Schwenkanimation
             
             zaehler = zaehler+1     # Zähler + 1
 
@@ -300,9 +325,13 @@ class Controller():     # Controllerklasse wird bestimmt
             if zaehler == 1:                            # erste Runde
                 aktuellerSpieler.land_erobern()         # land_erobern wird ausgeführt (Testzweck)
                 aktuellerSpieler.kontinent_bekommen()   # kontinent_bekommen wird ausgeführt (fest)
+                aktuellerSpieler.armeen_setzten(29, brasilien)  # 29 Figuren werden in Brasilien positioniert
+                aktuellerSpieler.armeen_setzten(100, neuguinea) # 100 Figuren werden in Neu-Guinea positioniert
             print(aktuellerSpieler)                     # Ausgabe aktueller S
             aktuellerSpieler.armeen_bekommen()          # aktueller S bekommt A
             aktuellerSpieler.karten_eintauschen()       # aktueller S kann Karten tauschen ( in entwicklung)
+
+            self.karte.animation_back()                 # coole Animation rückwärts
 
             if zaehler == 6:                            # nach 6 Spielzügen bricht das Spiel ab
                 break
