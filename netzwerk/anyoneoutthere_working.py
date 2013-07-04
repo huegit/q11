@@ -1,6 +1,7 @@
+# Q11-Projekt: "Risiko"
 # Programm zur Serversuche bzw. zum verschicken der Spieledaten
-# 29.06.2013
-# by Alexander Epple
+# aktualisiert am 29.06.2013
+# by Alexander Epple, Daniel Strobl, Michael Dörsam
 
 
 from socket import *        # Socket Server importieren
