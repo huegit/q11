@@ -6,6 +6,7 @@ import random
 import socket
 from tkinter import *
 from spielbrett import Spielbrett
+from spielbrett import Konsole
 
 class Kontinent():
     "Konstruktor: Name, Wert, Länder inc."
@@ -74,8 +75,9 @@ class Spieler():
             kontinentarmeen += i.wert   # iteriert die Liste K und addiert Wertigkeit
 
         self.armeen += laenderarmeen + kontinentarmeen # K A + L A = A ges
-            
-        print(self.armeen)
+
+        risk.gui.del_old()
+        risk.gui.meine_armeen(str(self.armeen))
 
     def karte_bekommen(self):   # Zufallskarte bekommen
 
@@ -93,7 +95,8 @@ class Spieler():
         old_armeen = self.armeen      # def Armeen vor eintauschen
         grund  = " "    # def Grund
 
-        print("Du hast",kanone,"Kanonen",reiter,"Reiter",soldat,"Soldaten") # Gibt Anzahl der Karten aus
+        risk.gui.karte_anzeigen(str(kanone),str(reiter),str(soldat))
+        print(kanone," Kanonen",reiter," Reiter",soldat," Soldaten")
 
         if len(self.listeKarten) < 5:   # wenn weniger als 5 Karten
 
@@ -177,7 +180,9 @@ class Spieler():
                     self.listeKarten.remove("Soldat")
                     self.listeKarten.remove("Soldat")
 
-            print("Du hast",(self.armeen-old_armeen),"Armeen für",grund,"bekommen")
+            risk.gui.karte_eintauschen(grund, str(self.armeen-old_armeen))
+            risk.gui.del_old()
+            risk.gui.meine_armeen(str(self.armeen))
 
     def land_erobern(self):     # Unfertige Methode (hier hinzufügen versch. L)
 
@@ -222,15 +227,16 @@ class Spieler():
             
             if sum(p.kontinent == index.name for p in self.listeLaender) == index.laenderzahl:
                 self.listeKontinente.append(index)
-                print("Neuer Kontinent:", risk.listeKontinente[zaehler])
+                risk.gui.kontinent_bekommen(index.name)
                 zaehler += 1
             elif sum(p.kontinent == index.name for p in self.listeLaender) != index.laenderzahl:
                 zaehler += 1
 
 class Controller():     # Controllerklasse wird bestimmt
     "Konstruktor"
-    def __init__(self, karte=None, listeSpieler=[], listeKontinente=[]):
+    def __init__(self, karte=None, gui=None, listeSpieler=[], listeKontinente=[]):
         self.karte               = karte
+        self.gui                 = gui
         self.listeSpieler        = listeSpieler         # Liste der S
         self.listeKontinente     = listeKontinente      # Liste aller K im Spiel
 
@@ -282,7 +288,9 @@ class Controller():     # Controllerklasse wird bestimmt
 
         zaehler = 0     # definition Zähler
         
-        self.karte = Spielbrett()
+        self.karte = Spielbrett().animation()
+        self.gui   = Konsole()
+        
         
         while True:         # Hauptschleife, Spiel an sich
             
