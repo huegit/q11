@@ -57,6 +57,14 @@ class Spielbrett(frame, Thread):
                            self.weststaaten, self.mittelamerika, self.oststaaten,
                            self.ontario, self.quebeck, self.groenland, self.venezuela,
                            self.brasilien, self.peru, self.argentinien]
+
+        self.dictLaender={(-45,34,0):"Alaska",(-32,37,0):"Nordwest-Territorium",
+                          (-38,23,0):"Alberta",(-41,13,0):"Weststaaten",
+                          (-40,1.5,0):"Mittelamerika",(-26,7,0):"Oststaaten",
+                          (-25,21,0):"Ontario",(-15,20,0):"Quebeck",
+                          (-12,39,0):"Grönland",(-35,-9.5,0):"Venezuela",
+                          (-27,-24,0):"Brasilien",(-39,-22.5,0):"Peru",
+                          (-40,-40,0):"Argentinien"}
         
 
 
@@ -86,7 +94,7 @@ class Spielbrett(frame, Thread):
             zaehler += 1
         return
 
-    def land_waehlen(self):
+    def land_suchen(self):
         zaehler = 0
         while True:
             if scene.mouse.events:
@@ -106,14 +114,20 @@ class Spielbrett(frame, Thread):
                         continue
 
                     elif mEvent.pick == i and i.color == color.red and zaehler == 1:
-                        k = label(frame=self,pos=scene.center, text="Land "+str(i)+" ausgewählt!",
-                                  yoffset=400, height=20, box=False, color=color.black, line=0,
-                                  opacity=.5)   # Schild mit Kontinent
-                        sleep(3)                # kurze Pause
-                        k.visible=False         # Schild verschwindet
-                        del(k)                  # wird gelöscht
-                        return 
-                                
+                        return tuple(i.pos)
+
+    def land_waehlen(self):
+        land = self.dictLaender[self.land_suchen()]
+        k = label(frame=self,pos=scene.center, text="Sie haben "+land+" ausgewählt!",
+                  yoffset=400, height=20, box=False, color=color.black, line=0,
+                  opacity=.5)   # Schild mit Kontinent
+        sleep(3)                # kurze Pause
+        k.visible=False         # Schild verschwindet
+        del(k)                  # wird gelöscht
+        for i in self.listeLaender:
+            i.color = color.black
+            i.opacity = 0
+        return land
     
 class Konsole(frame, Thread):
     "GUI, Bildschirmausgabe, HUD"
@@ -176,6 +190,7 @@ if __name__=="__main__":
     
     feld = Spielbrett()
     feld.animation()
-    feld.land_waehlen()
+    while True:
+        feld.land_waehlen()
     #platzieren(28, (-27.9943460056803, -24.5804013708412, 0), (-24.9217958343251, -25.263190297809, 0), (-31.4082906405193, -27.9943460056803, 0), (-26.2873736882607, -16.3869342472275, 0), (-34.4808408118745, -16.3869342472275, 0), color.red)
     sleep(1)
