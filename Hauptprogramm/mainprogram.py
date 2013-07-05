@@ -324,6 +324,7 @@ class Controller():     # Controllerklasse wird bestimmt
             aktuellerSpieler = self.listeSpieler[zaehler%(len(self.listeSpieler))-1]    # aktueller S wird bestimmt
             if zaehler == 1:                            # erste Runde
                 aktuellerSpieler.land_erobern()         # land_erobern wird ausgeführt (Testzweck)
+                self.karte.land_waehlen()
                 aktuellerSpieler.kontinent_bekommen()   # kontinent_bekommen wird ausgeführt (fest)
                 aktuellerSpieler.armeen_setzten(29, brasilien)  # 29 Figuren werden in Brasilien positioniert
                 aktuellerSpieler.armeen_setzten(100, neuguinea) # 100 Figuren werden in Neu-Guinea positioniert
