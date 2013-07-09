@@ -11,6 +11,7 @@ from visual import *                    # Importiert 3D Grafik
 from spielbrett import Spielbrett       # Importiert die Klasse Spielbrett
 from spielbrett import Konsole          # Importiert die Klasse Konsole (GUI)
 from spielsteine import platzieren      # Importiert die Funktion platzieren()
+from wuerfel import Wuerfel             # Importiert die Würfel (wird vill. gebraucht)
 
 class Kontinent():
     "Konstruktor: Name, Wert, Länder inc."

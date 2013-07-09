@@ -10,10 +10,10 @@ from math import sin, cos       # Mathematik für Spielsteine
 
 scene.background = color.white
 
-class Vierzack(extrusion, Thread):
+class Vierzack(extrusion):
     "modelliert Spielstein mit 4 Ecken"
     def __init__(self, pos=None, hoehe=2.5, color=None):
-        Thread.__init__(self)
+        
         # 1. 2D-Figuren erstellen
         viereck = Polygon([(1,1),(1,-1),(-1,-1),(-1,1)])
         kreis1  = shapes.circle(pos=( 1, 1), radius=0.85)

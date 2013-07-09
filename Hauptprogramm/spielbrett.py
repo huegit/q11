@@ -1,6 +1,6 @@
 # Q11-Projekt: "Risiko"
 # Spielbrett
-# aktualisiert am 04.07.2013
+# aktualisiert am 09.07.2013
 # K = Kontinent, L = Land, S = Spieler, A = Armee
 # by Alexander Epple, Oliver Schmalfuß, Raphael Ditsch
 
@@ -9,11 +9,14 @@ from threading import Thread        # threading, wichtig für parallele Abläufe
 from time import sleep              # sleep() für Zeit
 from tkinter import *               # tkinter für Ein/Ausgabefelder
 from spielsteine import platzieren  # platzieren() Methode zum testen
+from wuerfel import Wuerfel
 
-scene.userspin=False            # kein drehen
-scene.userzoom=True            # kein zoomen
+HOEHE = 600            # Halbe Höhe des Fensters
+
+scene.userspin=True            # kein drehen
+scene.userzoom=True             # kein zoomen
 scene.width = 1100              # Fensterbreite
-scene.height = 1200             # Fensterhöhe
+scene.height = HOEHE*2          # Fensterhöhe (= 2x HOEHE)
 scene.background = color.white  # Hintergrundfarbe
 scene.lights = [distant_light(direction=(0,0,1),
                             color=color.gray(0.9))] # Beleuchtung
@@ -95,39 +98,56 @@ class Spielbrett(frame, Thread):
         return
 
     def land_suchen(self):
-        zaehler = 0
+        zaehler = 0     # Zähler wird auf 0 gestellt
         while True:
-            if scene.mouse.events:
-                mEvent = scene.mouse.getclick()
-                for i in self.listeLaender:
-
+            if scene.mouse.events:  # wenn Mausevent
+                mEvent = scene.mouse.getclick() # Klick speichern
+                for i in self.listeLaender:     # iteriert Liste der L in Spielbrett
+                    
                     def schwarz():
-                        for j in self.listeLaender:
-                            j.color = color.black
-                            j.opacity = 0
+                        "macht alle Boxen schwarz und unsichtbar"
+                        for j in self.listeLaender: # iteru#iert Liste der L in Spielbrett
+                            j.color = color.black   # Farbe = schwarz
+                            j.opacity = 0           # durchsichtig
                     
                     if mEvent.pick == i and i.color == color.black:
-                        schwarz()
-                        i.color = color.red
-                        i.opacity = 0.5
-                        zaehler = 1
-                        continue
+                        # wenn Klick auf aktuellem L und Farbe des L ist schwarz
+                        schwarz()           # alle L werden schwarz gefärbt
+                        i.color = color.red # das aktuelle L wird rot
+                        i.opacity = 0.5     # und leicht sichtbar
+                        zaehler = 1         # Zähler wird hochgestellt
+                        continue            # Programm startet bei while neu
 
                     elif mEvent.pick == i and i.color == color.red and zaehler == 1:
-                        return tuple(i.pos)
+                        # wenn Klick auf aktuellem L und Farbe ist rot und Zähler hochgestellt
+                        return tuple(i.pos)  # Programm bricht ab und gibt Position des L zurück
 
     def land_waehlen(self):
-        land = self.dictLaender[self.land_suchen()]
+        land = self.dictLaender[self.land_suchen()] # Lwird anhand der zuvor erhalten Position aus dem Dictionary bestimmt
         k = label(frame=self,pos=scene.center, text="Sie haben "+land+" ausgewählt!",
-                  yoffset=400, height=20, box=False, color=color.black, line=0,
+                  yoffset=2/3*HOEHE, height=20, box=False, color=color.black, line=0,
                   opacity=.5)   # Schild mit Kontinent
         sleep(3)                # kurze Pause
         k.visible=False         # Schild verschwindet
         del(k)                  # wird gelöscht
-        for i in self.listeLaender:
+        
+        for i in self.listeLaender:     # alle L werden schwarz und durchsichtig 
             i.color = color.black
             i.opacity = 0
-        return land
+            
+        return land             # Name des gewählten L wird zurückgegeben
+
+class Laenderbox(extrusion, Thread):
+    "Macht das kreieren von Länderboxen einfacher, pos und Polygon-Figur werden übergeben"
+    def __init__(self, pos, Polygon):
+        Thread.__init__(self)
+        # Legt "Pfad" und Länge des Pfades (hoehe) fest
+        hoehe = 1
+        pfad = [vector(pos),vector(pos) + vector(hoehe,0,0)]
+
+        # Extrusionsobjekt wird erzeugt
+        extrusion.__init__(self, pos=pfad, color=color.black,
+                           shape=Polygon, angle2=pi, opacity=0)
     
 class Konsole(frame, Thread):
     "GUI, Bildschirmausgabe, HUD"
@@ -139,7 +159,7 @@ class Konsole(frame, Thread):
     def kontinent_bekommen(self, kontinent):
         "Ausgabe des eroberten Kontinents für 3s"
         k = label(frame=self,pos=scene.center, text="Sie haben "+kontinent+" erobert!",
-                  yoffset=400, height=20, box=False, color=color.black, line=0,
+                  yoffset=2/3*HOEHE, height=20, box=False, color=color.black, line=0,
                   opacity=.5)   # Schild mit Kontinent
         sleep(3)                # kurze Pause
         k.visible=False         # Schild verschwindet
@@ -152,7 +172,7 @@ class Konsole(frame, Thread):
     def karte_anzeigen(self, kanone, reiter, soldat):
         "zeigt Anzahl der verfügbaren Karten"
         k = label(frame=self,pos=scene.center, text="Sie haben "+kanone+" Kanonen, "+reiter+" Reiter und "+soldat+" Soldaten!",
-                  yoffset=400, height=20, box=False, color=color.black, line=0,
+                  yoffset=2/3*HOEHE, height=20, box=False, color=color.black, line=0,
                   opacity=.5)   # Schild mit Anzahl der Figuren
         sleep(3)                # kurze Pause
         k.visible=False         # Schild verschwindet
@@ -161,7 +181,7 @@ class Konsole(frame, Thread):
     def karte_eintauschen(self, grund, armeen):
         "zeigt eingetauschte Karten und Anzahl der bekommenen A"
         k = label(frame=self,pos=scene.center, text="Sie haben "+armeen+" Armeen für "+grund+" bekommen",
-                  yoffset=400, height=20, box=False, color=color.black, line=0,
+                  yoffset=2/3*HOEHE, height=20, box=False, color=color.black, line=0,
                   opacity=.5)   # Schild mit Anzahl der Armeen und wieso diese erhalten
         sleep(3)                # kurze Pause
         k.visible=False         # Schild verschwindet
@@ -170,7 +190,7 @@ class Konsole(frame, Thread):
     def meine_armeen(self, armeen):
         "dauerhafte Anzeige der verfügbaren A"
         self.a = label(frame=self,pos=scene.center, text="Armeen: "+armeen,
-                       yoffset=440, xoffset=440, height=20, box=False, color=color.black, line=0,
+                       yoffset=0.7333*HOEHE, xoffset=0.7333*HOEHE, height=20, box=False, color=color.black, line=0,
                        opacity=.5)  # Schild mit Anzahl der A, wird als Klassenvariable a festgelegt (siehe oben)
         
     def del_old(self):
@@ -186,11 +206,13 @@ class Konsole(frame, Thread):
 
 if __name__=="__main__":
 
-    # kurze Testserie mit animation und Figuren platzieren
+    # kurze Testserie mit Animation und Figuren platzieren und würfeln
     
     feld = Spielbrett()
     feld.animation()
-    while True:
-        feld.land_waehlen()
-    #platzieren(28, (-27.9943460056803, -24.5804013708412, 0), (-24.9217958343251, -25.263190297809, 0), (-31.4082906405193, -27.9943460056803, 0), (-26.2873736882607, -16.3869342472275, 0), (-34.4808408118745, -16.3869342472275, 0), color.red)
+    feld.land_waehlen()
+    platzieren(28, (-27.9943460056803, -24.5804013708412, 0), (-24.9217958343251, -25.263190297809, 0), (-31.4082906405193, -27.9943460056803, 0), (-26.2873736882607, -16.3869342472275, 0), (-34.4808408118745, -16.3869342472275, 0), color.red)
     sleep(1)
+    w = Wuerfel(spielfeldpos=feld.pos, pos=(-15,-15,60), color=(0.9,0,0)).start()
+    sleep(0.2)
+    w2= Wuerfel(spielfeldpos=feld.pos, pos=(15,-15,60), color=(0.9,0,0)).start()
