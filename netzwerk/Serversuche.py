@@ -1,7 +1,7 @@
 # Q11-Projekt: "Risiko"
 # Programm zur Serversuche bzw. zum verschicken der Spieledaten
 # aktualisiert am 29.06.2013
-# by Alexander Epple, Daniel Strobl, Michael Dörsam
+# by Daniel Strobl, Michael Dörsam, Alexander Epple
 
 
 from socket import *         # Socket Server importieren
@@ -38,7 +38,7 @@ class Server(Thread):
         antwort = "12hnisa".encode("UTF-8")     # def Antwort
         server.sendto(antwort, (client_new))    # Antwort wird an letzte Empfangsaddresse geschickt
         
-class Client(Thread):
+class Client(Thread):                           # Der client
     "Klasse Client, kann an Server senden und empfangen"
     def __init__(self, ip, name):
         Thread.__init__(self)
