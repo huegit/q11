@@ -51,8 +51,12 @@ class Client(Thread):                           # Der client
             self.schreiben()
             
     def schreiben(self):
-        senden = input("Nachricht:").encode("UTF-8")
-        client.sendto(senden, (self.ip, MYPORT))
+        senden = (myname+":"+input("Nachricht:")).encode("UTF-8")
+        self.client.sendto(senden, (self.ip, MYPORT))
+
+    def send(string):
+        self.client.sendto(string.encode("UTF-8"),(self.ip, MYPORT)
+        
 
 def serverstart():
     "Startet neuen Server der klasse Server"
