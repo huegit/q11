@@ -136,16 +136,16 @@ class Spielbrett(frame, Thread):
                 kb = scene.kb.getkey()          # Eingabe speichern
 
                 if pruefer == False:
-                    aktuellerK = zaehler%(len(self.listeKontinente))-1
+                    aktuellerK = zaehler%(len(self.listeKontinente))
                     if kb == "right":           # wenn rechte PfT:
-                        zaehler+=1                      # zaehler +1
                         i=self.listeKontinente[aktuellerK] # K wird ausgewählt
                         i.gewaehlt()                    # und rangezoomt
+                        zaehler+=1                      # zaehler +1
 
-                    if kb == "left":            # fast wie bei rechter PfT:
-                        zaehler-=1
+                    if kb == "left":            # fast wie bei rechter PfT
                         i=self.listeKontinente[aktuellerK] 
                         i.gewaehlt()
+                        zaehler-=1
 
                     if kb == "down":            # wenn untere PfT:
                         pruefer=True            # "weiter", pruefer auf True
@@ -157,18 +157,18 @@ class Spielbrett(frame, Thread):
                             
                 if pruefer == True:
                     # wenn Anzahl der L des ausgewählten K größer/gleich als zaehler2 und pruefer ist True
-                    aktuellesL = zaehler2%(len(i.listeLaender))-1
+                    aktuellesL = zaehler2%(len(i.listeLaender))
                     if kb == "right":       # wenn rechte PfT:
-                        zaehler2+=1                 # zaehler +1
                         schwarz()                   # alle L-Umrandungen schwarz
                         j=i.listeLaender[aktuellesL]# L wird ausgewählt
+                        zaehler2+=1                 # zaehler +1
                         j.umrandung.visible=True    # und Umrandung sichtbar gemacht
                         pruefer2=True               # pruefer2 auf True
                                         
                     if kb == "left":        # fast wie bei rechter PfT
-                        zaehler2-=1
                         schwarz()
                         j=i.listeLaender[aktuellesL]
+                        zaehler2-=1
                         j.umrandung.visible=True
                         pruefer2=True
 
