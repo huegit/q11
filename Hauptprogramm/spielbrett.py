@@ -39,7 +39,7 @@ class Spielbrett(frame, Thread):
                     axis=(0,0,1))                                   # Tischplatte
 
         # Länderboxen
-        
+        """
         self.alaska=box(frame=self, pos=(-45,34,0), size=(1,17,10), axis=(0,0,1), color=color.black, opacity=0)
         self.nordwestterritorium=box(frame=self, pos=(-32,37,0), size=(1,17,16), axis=(0,0,1), color=color.black, opacity=0)
         self.alberta=box(frame=self, pos=(-38,23,0), size=(1,12,14), axis=(0,0,1), color=color.black, opacity=0)
@@ -53,21 +53,31 @@ class Spielbrett(frame, Thread):
         self.brasilien=box(frame=self, pos=(-27,-24,0), size=(1,20,15), axis=(0,0,1), color=color.black, opacity=0)
         self.peru=box(frame=self, pos=(-39,-22.5,0), size=(1,17,8), axis=(0,0,1), color=color.black, opacity=0)
         self.argentinien=box(frame=self, pos=(-40,-40,0), size=(1,17,12), axis=(0,0,1), color=color.black, opacity=0)
+        """
+        self.peru = Laenderbox(pos=(0,0,0), Polygon=Polygon([(1,1),(1,-1),(-1,-1),(-1,1)]),
+                               Rand=paths.pointlist([(1,1),(1,-1),(-1,-1),(-1,1)]))
 
         # Liste mit allen Länderboxen
 
-        self.listeLaender=[self.alaska, self.nordwestterritorium, self.alberta,
-                           self.weststaaten, self.mittelamerika, self.oststaaten,
-                           self.ontario, self.quebeck, self.groenland, self.venezuela,
-                           self.brasilien, self.peru, self.argentinien]
+        self.listeLaender=[self.peru]
+        """
+        self.alaska, self.nordwestterritorium, self.alberta,
+        self.weststaaten, self.mittelamerika, self.oststaaten,
+        self.ontario, self.quebeck, self.groenland, self.venezuela,
+        self.brasilien, self.peru, self.argentinien
+        """
 
-        self.dictLaender={(-45,34,0):"Alaska",(-32,37,0):"Nordwest-Territorium",
-                          (-38,23,0):"Alberta",(-41,13,0):"Weststaaten",
-                          (-40,1.5,0):"Mittelamerika",(-26,7,0):"Oststaaten",
-                          (-25,21,0):"Ontario",(-15,20,0):"Quebeck",
-                          (-12,39,0):"Grönland",(-35,-9.5,0):"Venezuela",
-                          (-27,-24,0):"Brasilien",(-39,-22.5,0):"Peru",
-                          (-40,-40,0):"Argentinien"}
+        self.dictLaender={(0,0,0):"Test"}
+
+        """
+        (-45,34,0):"Alaska",(-32,37,0):"Nordwest-Territorium",
+        (-38,23,0):"Alberta",(-41,13,0):"Weststaaten",
+        (-40,1.5,0):"Mittelamerika",(-26,7,0):"Oststaaten",
+        (-25,21,0):"Ontario",(-15,20,0):"Quebeck",
+        (-12,39,0):"Grönland",(-35,-9.5,0):"Venezuela",
+        (-27,-24,0):"Brasilien",(-39,-22.5,0):"Peru",
+        (-40,-40,0):"Argentinien
+        """
         
 
 
@@ -108,7 +118,7 @@ class Spielbrett(frame, Thread):
                         "macht alle Boxen schwarz und unsichtbar"
                         for j in self.listeLaender: # iteru#iert Liste der L in Spielbrett
                             j.color = color.black   # Farbe = schwarz
-                            j.opacity = 0           # durchsichtig
+                            j.opacity = 0           # unsichtbar
                     
                     if mEvent.pick == i and i.color == color.black:
                         # wenn Klick auf aktuellem L und Farbe des L ist schwarz
@@ -120,6 +130,32 @@ class Spielbrett(frame, Thread):
 
                     elif mEvent.pick == i and i.color == color.red and zaehler == 1:
                         # wenn Klick auf aktuellem L und Farbe ist rot und Zähler hochgestellt
+                        return tuple(i.pos)  # Programm bricht ab und gibt Position des L zurück
+
+    def land_suchen2(self):
+        zaehler = 0     # Zähler wird auf 0 gestellt
+        while True:
+            if scene.mouse.events:  # wenn Mausevent
+                mEvent = scene.mouse.getclick() # Klick speichern
+                for i in self.listeLaender:     # iteriert Liste der L in Spielbrett
+                    
+                    def schwarz():
+                        "macht alle Boxen schwarz und unsichtbar"
+                        for j in self.listeLaender: # iteriert Liste der L in Spielbrett
+                            j.umrandung.color   = color.black
+                            j.umrandung.visible = False           # unsichtbar
+                    
+                    if mEvent.pick == i.flaeche: # and i.umrandung.color == color.black:
+                        # wenn Klick auf aktuellem L und Farbe des L ist schwarz
+                        schwarz()           # alle L werden schwarz gefärbt
+                        i.umrandung.color = color.red # das aktuelle L wird rot
+                        i.umrandung.visible=True
+                        zaehler = 1         # Zähler wird hochgestellt
+                        continue            # Programm startet bei while neu
+
+                    elif mEvent.pick == i and zaehler == 1:
+                        # wenn Klick auf aktuellem L und Farbe ist rot und Zähler hochgestellt
+                        print(i.pos)
                         return tuple(i.pos)  # Programm bricht ab und gibt Position des L zurück
 
     def land_waehlen(self):
@@ -137,17 +173,39 @@ class Spielbrett(frame, Thread):
             
         return land             # Name des gewählten L wird zurückgegeben
 
-class Laenderbox(extrusion, Thread):
+    def land_waehlen2(self):
+        land = self.dictLaender[self.land_suchen2()] # Lwird anhand der zuvor erhalten Position aus dem Dictionary bestimmt
+        k = label(frame=self,pos=scene.center, text="Sie haben "+land+" ausgewählt!",
+                  yoffset=2/3*HOEHE, height=20, box=False, color=color.black, line=0,
+                  opacity=.5)   # Schild mit Kontinent
+        sleep(3)                # kurze Pause
+        k.visible=False         # Schild verschwindet
+        del(k)                  # wird gelöscht
+        
+        for i in self.listeLaender:     # alle L werden schwarz und durchsichtig 
+            i.umrandung.color = color.black
+            i.umrandung.visible = False
+            
+        return land             # Name des gewählten L wird zurückgegeben
+
+class Laenderbox():
     "Macht das kreieren von Länderboxen einfacher, pos und Polygon-Figur werden übergeben"
-    def __init__(self, pos, Polygon):
-        Thread.__init__(self)
+    def __init__(self, pos, Polygon, Rand):
         # Legt "Pfad" und Länge des Pfades (hoehe) fest
-        hoehe = 1
-        pfad = [vector(pos),vector(pos) + vector(hoehe,0,0)]
+        hoehe = .25
+        pfad = [vector(pos),vector(pos) + vector(0,0,hoehe)]
+        randshape=shapes.rectangle(pos=(0,0), width=.25, height=.25)
 
         # Extrusionsobjekt wird erzeugt
-        extrusion.__init__(self, pos=pfad, color=color.black,
-                           shape=Polygon, angle2=pi, opacity=0)
+        self.pos = pos
+        self.f   = frame()
+        self.flaeche=extrusion(pos=pfad, color=color.black,
+                               shape=Polygon,visible=False)
+        self.umrandung=extrusion(frame=self.f,pos=Rand, color=color.black,
+                                 shape=randshape, angle2=pi, visible=False,
+                                 material=materials.glass)
+        self.f.rotate(angle=pi, axis=(0,1,1))
+        
     
 class Konsole(frame, Thread):
     "GUI, Bildschirmausgabe, HUD"
@@ -210,7 +268,7 @@ if __name__=="__main__":
     
     feld = Spielbrett()
     feld.animation()
-    feld.land_waehlen()
+    feld.land_waehlen2()
     platzieren(28, (-27.9943460056803, -24.5804013708412, 0), (-24.9217958343251, -25.263190297809, 0), (-31.4082906405193, -27.9943460056803, 0), (-26.2873736882607, -16.3869342472275, 0), (-34.4808408118745, -16.3869342472275, 0), color.red)
     sleep(1)
     w = Wuerfel(spielfeldpos=feld.pos, pos=(-15,-15,60), color=(0.9,0,0)).start()
