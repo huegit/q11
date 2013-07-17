@@ -60,7 +60,32 @@ class Spielbrett(frame, Thread):
         self.ostaustralien = Laenderbox(pos=(45,-32,0),Rand=paths.pointlist([(-2,1),(-5,-1),(-4,-4),(1,-6),(4,-4),(5,0),(2,5),(2,7),(-4,7)]))
         self.neuguinea = Laenderbox(pos=(45,-22,0),Rand=paths.pointlist([(-4,0),(-1,-2),(4,-4),(5,-3),(4,-2),(1,1),(-3,1)]))
         self.indonesien = Laenderbox(pos=(37,-19,0),Rand=paths.pointlist([(-3,1),(-10,1),(-8,-3),(-4,-5),(3,-6),(4,-4),(5,1),(5,5),(4,10),(3,10),(2,4)]))
-        
+        self.island = Laenderbox(pos=(-4,26,0),Rand=paths.pointlist([(-3,2),(-4,0),(-1,-3),(2,-2),(3,0),(2,2),(0,3),(0,2),(-2,2)]))
+        self.skandinavien = Laenderbox(pos=(0,17,0),Rand=paths.pointlist([(-6,-1),(-5,-7),(-1,-6),(2,-5),(3,0),(2,5),(3,9),(-1,7),(-3,1)]))
+        self.ukraine = Laenderbox(pos=(8,13,0),Rand=paths.pointlist([(9,16),(-1,9),(-2,13),(-4,13),(-6,8),(-5,3),(-5,-1),(-7,-2),(-8,-9),(-6,-10),(-4,-12),
+                                                                     (-1,-11),(-2,-12),(0,-12),(1,-15),(2,-15),(1,-12),(3,-11),(2,-4),(4,-5),(8,1),(7,6),(10,10),(9,16)]))
+        self.mitteleuropa = Laenderbox(pos=(-2,6,0),Rand=paths.pointlist([(0,4),(-2,0),(-5,-2),(-2,-4),(0,-3),(1,-4),(2,-4),(2,-1),(3,1),(2,5),(0,4)]))
+        self.großbritannien = Laenderbox(pos=(-10,7,0),Rand=paths.pointlist([(-1,3),(-2,1),(-3,-1),(-1,-3),(0,-3),(3,0),(2,1),(2,2),(3,4),(2,5),(0,3)]))
+        self.westeuropa = Laenderbox(pos=(-8,-2,0),Rand=paths.pointlist([(-2,0),(-6,0),(-6,-5),(-4,-6),(0,-6),(1,-2),(4,-1),(4,2),(4,4),(0,6),(-4,4),(-2,2)]))
+        self.suedeuropa = Laenderbox(pos=(0,0,0),Rand=paths.pointlist([(-4,2),(-3,-1),(-3,-3),(0,-5),(-3,-8),(-1,-8),(0,-7),(1,-5),(0,-2),(2,-4),
+                                                                       (3,-4),(3,-2),(0,3),(-1,1),(-2,3),(-4,2)]))
+        self.ural = Laenderbox(pos=(21,17,0),Rand=paths.pointlist([(-6,1),(-4,-3),(-5,-4),(-1,-7),(1,-10),(3,-14),(4,-13),(4,-7),(3,-3),(3,1),(3,4),
+                                                                   (4,9),(1,12),(1,19),(-1,19),(-2,12),(-3,12),(-2,6),(-6,2)]))
+        self.sibirien = Laenderbox(pos=(29,21,0),Rand=paths.pointlist([(-7,11),(-4,8),(-4,1),(-4,-8),(-4,-17),(-2,-17),(0,-10),(2,-4),(2,-1),(3,4),
+                                                                       (4,5),(5,5),(5,8),(6,10),(7,9),(9,16),(-2,15),(-3,12),(-7,12)]))
+        self.jakutien = Laenderbox(pos=(40,27,0),Rand=paths.pointlist([(-2,9),(-4,4),(-5,4),(-5,-1),(-7,-1),(-8,-5),(-2,-5),(-1,-5),(-1,-6),(-2,-7),
+                                                                       (-2,-10),(2,-9),(3,-7),(4,-6),(5,4),(5,7),(2,8),(-2,10)]))
+        self.siam = Laenderbox(pos=(29,-11,0),Rand=paths.pointlist([(1,-6),(-1,-6),(-4,0),(-4,3),(-2,3),(1,5),(3,0),(1,-2),(0,-2)]))
+        self.indien = Laenderbox(pos=(20,-10,0),Rand=paths.pointlist([(-2,-3),(0,-8),(1,-8),(5,2),(3,5),(2,5),(1,5),(-4,4),(-6,3),(-4,-2)]))
+        self.china = Laenderbox(pos=(28,-1,0),Rand=paths.pointlist([(-2,-7),(2,-4),(2,-6),(5,-8),(7,-6),(7,0),(6,1),(6,2),(3,2),(0,5),(-2,5),(-7,-1),
+                                                                    (-8,-1),(-8,-2),(-7,-2),(-8,-4)]))
+        self.mongolei = Laenderbox(pos=(33,4,0),Rand=paths.pointlist([(-2,-3),(2,-3),(2,-4),(5,-6),(4,-4),(2,3),(-6,2),(-6,0)]))
+        self.japan = Laenderbox(pos=(45,1,0),Rand=paths.pointlist([(-3,-1),(-6,-3),(-4,-5),(2,0),(1,9),(-1,9),(-1,2),(-3,0)]))
+        self.mittlererosten = Laenderbox(pos=(10,-8,0),Rand=paths.pointlist([(0,-9),(4,-7),(5,-4),(4,1),(6,2),(6,4),(4,5),(-1,6),(-3,8),(-7,7),(-3,1),(-5,0)]))
+        self.afghanistan = Laenderbox(pos=(17,2,0),Rand=paths.pointlist([(-6,-5),(-3,-4),(-1,-6),(-1,-7),(3,-7),(3,-2),(7,1),(-1,10),(-3,7),(-6,5),(-6,-4)]))
+        self.irkutsk = Laenderbox(pos=(35,15,0),Rand=paths.pointlist([(-7,-8),(0,-7),(0,-4),(4,1),(2,5),(4,6),(3,7),(0,6),(-4,6),(-4,2),(-3,1)]))
+        self.kamtschatka = Laenderbox(pos=(45,17,0),Rand=paths.pointlist([(1,16),(0,5),(-10,-6),(-8,-16),(1,1),(3,2),(4,13),(2,16)]))
+
         self.nordamerika=Screening(listeLaender=[self.alaska,self.nordwestterritorium,
                                                  self.groenland,self.alberta,self.oregano,
                                                  self.quebeck,self.weststaaten,self.oststaaten,
@@ -75,7 +100,19 @@ class Spielbrett(frame, Thread):
                                                 self.neuguinea,self.indonesien],
                                   center=(38,-26,0),entf=(30,30,30),col=color.yellow)
 
-        self.listeKontinente=[self.nordamerika,self.suedamerika,self.australien]
+        self.europa=Screening(listeLaender=[self.island,self.skandinavien,self.ukraine,
+                                            self.großbritannien,self.mitteleuropa,
+                                            self.westeuropa,self.suedeuropa],
+                              center=(0,11,0),entf=(40,40,40),col=color.red)
+
+        self.asien=Screening(listeLaender=[self.ural,self.sibirien,self.irkutsk,
+                                           self.jakutien,self.kamtschatka,
+                                           self.afghanistan,self.china,self.mongolei,
+                                           self.japan,self.mittlererosten,self.indien,
+                                           self.siam],
+                             center=(29,10,0),entf=(50,50,50),col=color.red)
+
+        self.listeKontinente=[self.nordamerika,self.europa,self.asien,self.suedamerika,self.australien]
 
         self.dictLaender={(-43,35,0):"Alaska",
                           (-33,35,0):"Nordwest-Territorium",
@@ -93,7 +130,26 @@ class Spielbrett(frame, Thread):
                           (37,-33,0):"Westaustralien",
                           (45,-32,0):"Ostaustralien",
                           (45,-22,0):"Neuguinea",
-                          (37,-19,0):"Indonesien"}
+                          (37,-19,0):"Indonesien",
+                          (-4,26,0):"Island",
+                          (0,17,0):"Skandinavien",
+                          (8,13,0):"Ukraine",
+                          (-2,6,0):"Mitteleuropa",
+                          (-10,7,0):"Großbritannien",
+                          (-8,-2,0):"Westeuropa",
+                          (0,0,0):"Südeuropa",
+                          (21,17,0):"Ural",
+                          (29,21,0):"Sibirien",
+                          (40,27,0):"Jakutien",
+                          (29,-11,0):"Siam",
+                          (20,-10,0):"Indien",
+                          (28,-1,0):"China",
+                          (33,4,0):"Mongolei",
+                          (45,1,0):"Japan",
+                          (10,-8,0):"Mittlerer Osten",
+                          (17,2,0):"Afghanistan",
+                          (35,15,0):"Irkutsk",
+                          (45,17,0):"Kamtschatka"}
         
     def animation(self):
         "Coole Animation die in die Karte zoomt"
@@ -150,13 +206,17 @@ class Spielbrett(frame, Thread):
                         i.gewaehlt() 
 
                     if kb == "down":            # wenn untere PfT:
-                        try:
-                            pruefer=True            # "weiter", pruefer auf True
-                            aktuellerK = zaehler%(len(self.listeKontinente))
-                            j=i.listeLaender[aktuellerK]
-                            j.umrandung.visible=True
-                        except AttributeError:
+                        if scene.center == (0,0,0):
                             continue
+                        else:
+                            try:
+                                pruefer=True            # "weiter", pruefer auf True
+                                aktuellerK = zaehler%(len(self.listeKontinente))-1
+                                j=i.listeLaender[aktuellerK]
+                                j.umrandung.visible=True
+                            except AttributeError:
+                                continue
+                            
                         
                     if kb == "up":          # wenn untere PfT:
                         # "zurück", rauszoomen
@@ -196,6 +256,7 @@ class Spielbrett(frame, Thread):
                         # Koordinaten zurückgeben
                         aktuellesL = zaehler2%(len(i.listeLaender))
                         pos = tuple(i.listeLaender[aktuellesL].pos)
+                        
                         return pos
                             
 
