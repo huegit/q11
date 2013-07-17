@@ -7,7 +7,7 @@
 from random import *                    # Importiert Zufallsmodul
 from socket import *                    # Importiert Servermodul
 from visual import *                    # Importiert 3D Grafik
-from visual.controls import *           # Importiert Eingabe
+from tkinter import *
 from spielbrett import Spielbrett       # Importiert die Klasse Spielbrett
 from spielbrett import Konsole          # Importiert die Klasse Konsole (GUI)
 from spielsteine import platzieren      # Importiert die Funktion platzieren()
@@ -263,10 +263,11 @@ class Controller():     # Controllerklasse wird bestimmt
                 
     def spielstart(self):   # Spielroutine
         "Hauptmethode, steuert Spiel und Zugroutinen"
-        c = controls(text="Risiko GUI")
         
         self.listeKontinente.sort(key=self.sort_k)      # Kontinente werden nach Name sortiert
+        root=Tk()
 
+        
         while True:         # Anfangsschleife für S hinzufügen
             try:            # veruche folgendes
 

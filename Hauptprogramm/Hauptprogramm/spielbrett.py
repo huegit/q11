@@ -65,15 +65,15 @@ class Spielbrett(frame, Thread):
                                                  self.groenland,self.alberta,self.oregano,
                                                  self.quebeck,self.weststaaten,self.oststaaten,
                                                  self.mittelamerika],
-                                   center=(-25,22,0),entf=(50,50,50))
+                                   center=(-25,22,0),entf=(50,50,50),col=color.red)
         
         self.suedamerika=Screening(listeLaender=[self.venezuela,self.peru,
                                                  self.argentinien,self.brasilien],
-                                   center=(-32,-26,0),entf=(40,40,40))
+                                   center=(-32,-26,0),entf=(40,40,40),col=color.blue)
         
         self.australien=Screening(listeLaender=[self.westaustralien,self.ostaustralien,
                                                 self.neuguinea,self.indonesien],
-                                  center=(38,-26,0),entf=(30,30,30))
+                                  center=(38,-26,0),entf=(30,30,30),col=color.yellow)
 
         self.listeKontinente=[self.nordamerika,self.suedamerika,self.australien]
 
@@ -150,10 +150,14 @@ class Spielbrett(frame, Thread):
                         i.gewaehlt() 
 
                     if kb == "down":            # wenn untere PfT:
-                        pruefer=True            # "weiter", pruefer auf True
-                        j=i.listeLaender[zaehler2]
-                        j.umrandung.visible=True
-
+                        try:
+                            pruefer=True            # "weiter", pruefer auf True
+                            aktuellerK = zaehler%(len(self.listeKontinente))
+                            j=i.listeLaender[aktuellerK]
+                            j.umrandung.visible=True
+                        except AttributeError:
+                            continue
+                        
                     if kb == "up":          # wenn untere PfT:
                         # "zurück", rauszoomen
                         scene.center = (0,0,0)
@@ -220,7 +224,7 @@ class Laenderbox():
         # Extrusionsobjekt wird erzeugt
         self.pos        = pos
         self.u          = frame(pos=pos)
-        self.umrandung  =extrusion(frame=self.u,pos=Rand, color=color.red,
+        self.umrandung  =extrusion(frame=self.u,pos=Rand, color=color.black,
                                  shape=randshape, angle2=pi, visible=False)
 
         # und gedreht
@@ -230,14 +234,18 @@ class Laenderbox():
 
 class Screening():
     "Zoomt auf Kontinent"
-    def __init__(self, listeLaender=[], center=None, entf=None):
+    def __init__(self, listeLaender=[], center=None, entf=None, col=None):
         self.listeLaender=listeLaender
-        self.center=center
-        self.entf=entf
+        self.center =center
+        self.entf   =entf
+        self.col    =col
 
     def gewaehlt(self):
         scene.center = self.center
         scene.range = self.entf
+        
+        for i in self.listeLaender:
+            i.umrandung.color=self.col
         
     
 class Konsole(frame, Thread):
