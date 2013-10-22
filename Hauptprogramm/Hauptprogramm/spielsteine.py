@@ -28,7 +28,7 @@ class Vierzack(extrusion):
         # 3. Extrusionsobjekt erzeugen
         extrusion.__init__(self, pos=pfad, color=color,
                            shape=viereck-kreis1-kreis2-kreis3-kreis4,
-                           angle2=pi, material=materials.blazed)
+                           angle2=pi, material=materials.wood)
 
 class Dreizack(extrusion):
     "modelliert Spielstein mit 3 Ecken"
@@ -48,7 +48,7 @@ class Dreizack(extrusion):
         # 3. Extrusionsobjekt erzeugen
         extrusion.__init__(self, pos=pfad, color=color,
                            shape=dreieck+dreieck2-kreis1-kreis2-kreis3,
-                           angle2=pi, material=materials.blazed)
+                           angle2=pi, material=materials.wood)
 
 class Fuenfzack(extrusion):
     "modelliert Spielstein mit 5 Ecken"
@@ -73,7 +73,7 @@ class Fuenfzack(extrusion):
         # 3. Extrusionsobjekt erzeugen
         extrusion.__init__(self, pos=pfad, color=color,
                            shape=fuenfeck-kreis1-kreis2-kreis3-kreis4-kreis5,
-                           angle2=pi, material=materials.blazed)
+                           angle2=pi, material=materials.wood)
 
 def platzieren(armeen, pos1, pos2, pos3, pos4, pos5, farbe):
     "platziert Armeen anhand der Anzahl auf dem Land"

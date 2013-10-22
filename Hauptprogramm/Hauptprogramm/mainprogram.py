@@ -12,6 +12,10 @@ from spielbrett import Spielbrett       # Importiert die Klasse Spielbrett
 from spielbrett import Konsole          # Importiert die Klasse Konsole (GUI)
 from spielsteine import platzieren      # Importiert die Funktion platzieren()
 from wuerfel import Wuerfel             # Importiert die Würfel (wird vill. gebraucht)
+from sqlite3 import *                   # Datenbankmodul
+
+riskdb = connect("risk.datenbank")
+cursor = riskdb.cursor()
 
 class Kontinent():
     "Konstruktor: Name, Wert, Länder inc."
@@ -53,8 +57,9 @@ class Figur():
 
 class Spieler():
     "Konstruktor: Name"
-    def __init__(self, name, armeen=0, listeLaender=[], listeKontinente=[], listeKarten=[]):
+    def __init__(self, name, farbe, armeen=0, listeLaender=[], listeKontinente=[], listeKarten=[]):
         self.name             = name            # Name des S
+        self.farbe            = farbe           # Farbe des S
         self.armeen           = armeen          # A des S
         self.listeLaender     = listeLaender    # Liste der L von S
         self.listeKontinente  = listeKontinente # Liste der K von S
@@ -83,11 +88,79 @@ class Spieler():
         risk.gui.del_old()                      # Entfernt alte A Anzeige
         risk.gui.meine_armeen(str(self.armeen)) # Erstellt neue anhand der zusätzlichen A
 
+        try:
+            riskdb.execute("""
+            CREATE TABLE armeen(
+            id INT,
+            spieler CHAR(20) NOT NULL,
+            armeen INT);
+            """)
+            
+        except OperationalError:
+            pass
+        
+        riskdb.commit()
+
+        eigenid = None
+        eigenname = str(self.name)
+        eigenarmeen = int(self.armeen)
+
+        for i in risk.listeSpieler:
+            if i.name == self.name:
+                eigenid = int(risk.listeSpieler.index(i))
+            else:
+                pass
+            
+        cursor.execute("SELECT count(*) FROM armeen WHERE id=?", (eigenid,))
+        data=cursor.fetchone()[0]
+        if data==0:
+            riskdb.execute("INSERT INTO armeen(id, spieler, armeen)VALUES(?,?,?)",(eigenid,eigenname,eigenarmeen))
+            riskdb.commit()
+        else:
+            riskdb.execute("UPDATE armeen SET armeen=? WHERE id=?",(eigenarmeen, eigenid))
+            riskdb.commit()
+            
+
     def karte_bekommen(self):   # Zufallskarte bekommen
         "Methode um zufällig Karte zu bekommen"
 
         r = choice(["Reiter", "Soldat", "Kanone"])  # zufällige Karte
         self.listeKarten.append(r)                  # wird an Liste der Karten angehängt
+
+        try:
+            riskdb.execute("""
+            CREATE TABLE karten(
+            id INT,
+            spieler CHAR(20) NOT NULL,
+            karten CHAR);
+            """)
+            
+        except OperationalError:
+            pass
+        
+        riskdb.commit()
+
+        eigenid = None
+        eigenname = str(self.name)
+        eigenkarten = list()
+
+        for i in self.listeKarten:
+            eigenkarten.append(i)
+
+        for i in risk.listeSpieler:
+            if i.name == self.name:
+                eigenid = int(risk.listeSpieler.index(i))
+            else:
+                pass
+            
+        cursor.execute("SELECT count(*) FROM karten WHERE id=?", (eigenid,))
+        data=cursor.fetchone()[0]
+        if data==0:
+            riskdb.execute("INSERT INTO karten(id, spieler, karten)VALUES(?,?,?)",(eigenid,eigenname,str(eigenkarten)))
+            riskdb.commit()
+        else:
+            riskdb.execute("UPDATE karten SET karten=? WHERE id=?",(str(eigenkarten), eigenid))
+            riskdb.commit()
 
     def würfeln(self):
         "schnelle Würfelmethode"
@@ -192,6 +265,41 @@ class Spieler():
             risk.gui.del_old()                                              # diese entfernt alte A Anzeige
             risk.gui.meine_armeen(str(self.armeen))
 
+        try:
+            riskdb.execute("""
+            CREATE TABLE karten(
+            id INT,
+            spieler CHAR(20) NOT NULL,
+            karten CHAR);
+            """)
+            
+        except OperationalError:
+            pass
+        
+        riskdb.commit()
+
+        eigenid = None
+        eigenname = str(self.name)
+        eigenkarten = list()
+
+        for i in self.listeKarten:
+            eigenkarten.append(i)
+
+        for i in risk.listeSpieler:
+            if i.name == self.name:
+                eigenid = int(risk.listeSpieler.index(i))
+            else:
+                pass
+            
+        cursor.execute("SELECT count(*) FROM karten WHERE id=?", (eigenid,))
+        data=cursor.fetchone()[0]
+        if data==0:
+            riskdb.execute("INSERT INTO karten(id, spieler, karten)VALUES(?,?,?)",(eigenid,eigenname,str(eigenkarten)))
+            riskdb.commit()
+        else:
+            riskdb.execute("UPDATE karten SET karten=? WHERE id=?",(str(eigenkarten), eigenid))
+            riskdb.commit()
+
     def land_erobern(self):     # Unfertige Methode (hier hinzufügen versch. L)
         "Methode um L zu bekommen"
 
@@ -225,7 +333,7 @@ class Spieler():
         
         index   = self.listeLaender.index(land)     # L wird bestimmt (erstes vorkommendes Element in listeLaender)
         l = self.listeLaender[index]                # Daten von L werden gespeichert
-        platzieren(armeen, l.pos1, l.pos2, l.pos3, l.pos4, l.pos5, color.red)   # und zum platzieren verwendet (Positionen)
+        platzieren(armeen, l.pos1, l.pos2, l.pos3, l.pos4, l.pos5, self.farbe)   # und zum platzieren verwendet (Positionen)
 
     def sort_l(self, c):
         "Sortiermethode, gibt K des L zurück"
@@ -248,6 +356,41 @@ class Spieler():
                 zaehler += 1                                        # Zähler wird hochgestuft
             elif sum(p.kontinent == index.name for p in self.listeLaender) != index.laenderzahl: # wenn dem nicht so ist
                 zaehler += 1                                        # Zähler wird hochgestuft
+
+        try:
+            riskdb.execute("""
+            CREATE TABLE kontinente(
+            id INT,
+            spieler CHAR(20) NOT NULL,
+            kontinente CHAR);
+            """)
+            
+        except OperationalError:
+            pass
+        
+        riskdb.commit()
+
+        eigenid = None
+        eigenname = str(self.name)
+        eigenkontinente = list()
+
+        for i in self.listeKontinente:
+            eigenkontinente.append(i)
+
+        for i in risk.listeSpieler:
+            if i.name == self.name:
+                eigenid = int(risk.listeSpieler.index(i))
+            else:
+                pass
+            
+        cursor.execute("SELECT count(*) FROM kontinente WHERE id=?", (eigenid,))
+        data=cursor.fetchone()[0]
+        if data==0:
+            riskdb.execute("INSERT INTO kontinente(id, spieler, kontinente)VALUES(?,?,?)",(eigenid,eigenname,str(eigenkontinente)))
+            riskdb.commit()
+        else:
+            riskdb.execute("UPDATE kontinente SET kontinente=? WHERE id=?",(str(eigenkontinente), eigenid))
+            riskdb.commit()
 
 class Controller():     # Controllerklasse wird bestimmt
     "Konstruktor"
@@ -273,6 +416,8 @@ class Controller():     # Controllerklasse wird bestimmt
 
                     def spieler_einfuegen(event):
                         "Methode um S einzufügen"
+                        spielername.config(state=DISABLED)
+                        
                         name = spielername.get() # Speichere aktuelle Eingabe unter Name
                         
                         if name == "":          # Wenn keine Eingabe
@@ -282,10 +427,23 @@ class Controller():     # Controllerklasse wird bestimmt
                             spielerl.insert(END, "Bitte gültigen Namen eingeben!\n")    # bitte korrekte Eingabe erscheint im Fenster
                             spielername.delete(0,END)       # Eingabe wird entfernt
                             return              # Ende der Fkt.
-                        
-                        spielername.delete(0,END)   # Eingabe wird entfernt
-                        self.listeSpieler.append(Spieler(name)) # wird in listeSpieler integriert
-                        spielerl.insert(END, "Spieler "+name+" hinzugefügt!\n") # Erfolgreich eingefügt erscheint im Fenster
+                        farbe_waehlen()
+
+                    def kulanz_test(name, farbe):
+                        aktname = None
+                        aktnamezahl = 0
+
+                        for i in self.listeSpieler:
+                            if i.name == name:
+                                aktnamezahl += 1 
+                            else:
+                                pass
+                            
+                        if aktnamezahl >= 1:
+                                spielerl.insert(END, "Name bereits vergeben!\n")
+                        else:
+                            self.listeSpieler.append(Spieler(name=name, farbe=farbe))
+                            spielerl.insert(END, "Spieler "+name+" hinzugefügt!\n")
 
                     def weiter():
                         "Wenn keine Spieler mehr eingefügt werden sollen"
@@ -294,6 +452,65 @@ class Controller():     # Controllerklasse wird bestimmt
                         else:                           # wenn kein S vorhanden
                             spielerl.insert(END, "Vor Start bitte Name eingeben!\n")    # Bitte S hinzufügen erscheint im Fenster
 
+                    def farbe_waehlen():                      
+                        global rot
+                        global blau
+                        global gruen
+                        global gelb
+                        global lila
+                        global weiss
+                        
+                        rot   = Button(root, text="Rot wählen", command = farbe_zuweisen_rot, width=20, background="red")
+                        rot.grid(row=2, sticky=W)
+                        blau  = Button(root, text="Blau wählen", command = farbe_zuweisen_blau, width=20, background="blue")
+                        blau.grid(row=2, sticky=E)
+                        gruen = Button(root, text="Grün wählen", command = farbe_zuweisen_gruen, width=20, background="green")
+                        gruen.grid(row=3, sticky=W)
+                        gelb  = Button(root, text="Gelb wählen", command = farbe_zuweisen_gelb, width=20, background="yellow")
+                        gelb.grid(row=3, sticky=E)
+                        lila  = Button(root, text="Lila wählen", command = farbe_zuweisen_lila, width=20, background="purple")
+                        lila.grid(row=4, sticky=W)
+                        weiss = Button(root, text="Weiss wählen", command = farbe_zuweisen_weiss, width=20, background="white")
+                        weiss.grid(row=4, sticky=E)
+                        spielerl.insert(END, "Bitte Farbe wählen!\n")
+
+                    def farbe_zuweisen_rot():
+                        aktname = spielername.get() # Speichere aktuelle Eingabe unter Name
+                        kulanz_test(aktname, color.red)
+                        farbe_ende()
+                    def farbe_zuweisen_blau():
+                        aktname = spielername.get() # Speichere aktuelle Eingabe unter Name
+                        kulanz_test(aktname, color.blue)
+                        farbe_ende()
+                    def farbe_zuweisen_gruen():
+                        aktname = spielername.get() # Speichere aktuelle Eingabe unter Name
+                        kulanz_test(aktname, color.green)
+                        farbe_ende()
+                    def farbe_zuweisen_gelb():
+                        aktname = spielername.get() # Speichere aktuelle Eingabe unter Name
+                        kulanz_test(aktname, color.yellow)
+                        farbe_ende()
+                    def farbe_zuweisen_lila():
+                        aktname = spielername.get() # Speichere aktuelle Eingabe unter Name
+                        kulanz_test(aktname, color.magenta)
+                        farbe_ende()
+                    def farbe_zuweisen_weiss():
+                        aktname = spielername.get() # Speichere aktuelle Eingabe unter Name
+                        kulanz_test(aktname, color.white)
+                        farbe_ende()
+                        
+                    def farbe_ende():
+                        spielerl.see(END)
+                        starten.config(state=NORMAL)
+                        rot.destroy()
+                        blau.destroy()
+                        gruen.destroy()
+                        gelb.destroy()
+                        lila.destroy()
+                        weiss.destroy()
+                        spielername.config(state=NORMAL)
+                        spielername.delete(0,END)   # Eingabe wird entfernt
+                        
                     Label(root, text="Name eingeben:").grid(row=1, sticky=W)    # Schriftzug neben dem Eingabefeld
                     spielerl = Text(root, height=5, width=40)                   # Ausgabefenster
                     spielerl.grid(row=0)                                        # wird positioniert
@@ -301,9 +518,10 @@ class Controller():     # Controllerklasse wird bestimmt
                     spielername.bind("<Return>", spieler_einfuegen)             # wird an Eingabetaste gebunden
                     spielername.grid(row=1, sticky=E)                           # und positioniert
 
-                   
-                    starten = Button(root, text="Spiel starten", command = weiter, width=20).grid(row=2, sticky=W)  # Startbutton, ist an weiter() gebunden
-                    ende = Button(root, text="Spiel beenden", command = exit, width=20).grid(row=2, sticky=E)       # Endebutton, beendet Spiel
+                    starten     = Button(root, text="Spiel starten", command = weiter, width=20, state=DISABLED) # Startbutton, ist an weiter() gebunden
+                    starten.grid(row=5, sticky=W)
+                    ende        = Button(root, text="Spiel beenden", command = exit, width=20)       # Endebutton, beendet Spiel
+                    ende.grid(row=5, sticky=E)
 
                     root.mainloop()     # Fenster wird erstellt (mit allen Knöpfen Eingabe/Ausgabefeldern etc. , muss immer am Ende stehen
                     
